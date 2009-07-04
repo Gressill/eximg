@@ -15,7 +15,8 @@ public class MGAgent extends Agent {
 								// looks default as 27
 	// at last M time steps
 	/**
-	 * s
+	 * strategySize:
+	 * 代理的策越个数
 	 */
 	private int strategySize; // Number of strategies default as 2
 
