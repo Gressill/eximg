@@ -1,0 +1,38 @@
+1. Data Structure
+
+Game:
+		t:        //----------轮数
+		Pr:       //----------第t轮真实市场价格
+		A:        //----------决策积累量，extended demand
+		gama:     //----------the sensitivity of price increment. 
+		beta:     //----------the market impact factor.
+		Pt:       //----------交易价格 the tranction price
+		miu:      //----------t时刻市场状态，one of the 2m strings of the m most recent outcomes of the sign of price changes.
+		
+		
+		price_series:  //-----历史价格序列，如过去100轮价格
+		
+		
+		PRICE_LENGTH; //100
+
+Agents:
+		t:        //----------轮数 
+		k;        /*----------头寸，头寸提供了一个简单的模拟真实市场中有限财富的影响----------*/
+		Max_k:    //----------最大头寸，最大头寸起限制头寸过大的作用，当头寸的绝对值到达最大头寸的限制时，头寸的绝对值不再增加，模型的一个结果是财富具有可加性，而不是可乘性。
+		cash:     //----------现金量
+		wealth:   //----------真实财富
+		a:        //----------决定，trading decision. 
+		s:        //----------策越个数
+		BUY;	  // +1
+		SELL;     // -1
+		HOLD; 	  // 0
+
+Strategy:
+		t:         //---------轮数
+		strategy_series: //---策越决定，length = 2^m, value = -1,0, or +1.
+		v_k:        //---------策略的虚拟头寸
+		Max_k:     //---------最大头寸
+		v_wealth:  //---------策略的虚拟财富
+		
+2
+程序实现流程:
