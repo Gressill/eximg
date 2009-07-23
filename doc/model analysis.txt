@@ -2,80 +2,126 @@
 
 Game:
 		t:        //----------轮数
-		Pr:       //----------第t轮真实市场价格
-		Pr_next:  //----------第t+1轮的真实市场价格
+		realmarket_price_series[GAME_PRICE_LENGTH]: //----------真实市场价格时间序列
 		A:        //----------第t轮做决策时的决策积累量，extended demand
-		Pt:       //----------第t轮交易价格 the tranction price
-		Pt_next:  //----------第t+1轮的交易价格
+		tranction_price_series[GAME_PRICE_LENGTH];  //----------交易价格时间序列
 		state:    //----------t时刻市场状态，one of the 2m strings of the m most recent outcomes of the sign of price changes.
 		
-		
-		price_series:  //-----历史价格序列，如过去100轮价格
-		
-		agents[];  //agents
+		buy_number;
+		sell_number;
+		keep_number;
+				
+		agents[n];  //agents
 		
 		m;			//记忆长度
 		s;			//策越个数
 		n;			//agents个数
 		
-		PRICE_LENGTH; //100
+		GAME_PRICE_LENGTH; //100
 		GAMA:     //----------the sensitivity of price increment. 
 		BETA:     //----------the market impact factor.
 		
 Agents:
 		t:        //----------轮数 
-		k;        /*----------头寸，头寸提供了一个简单的模拟真实市场中有限财富的影响----------*/
+		position_series[AGENT_PRICE_LENGTH];  /*----------头寸时间序列，头寸提供了一个简单的模拟真实市场中有限财富的影响----------*/
 		Max_k:    //----------最大头寸，最大头寸起限制头寸过大的作用，当头寸的绝对值到达最大头寸的限制时，头寸的绝对值不再增加，模型的一个结果是财富具有可加性，而不是可乘性。
-		cash:     //----------现金量
-		wealth:   //----------真实财富
+		cash_series[AGENT_PRICE_LENGTH]:     //----------现金时间序列
+		wealth_series[AGENT_PRICE_LENGTH]:   //----------真实财富时间序列
 		
-		strategy[];//策越
+		
+		strategy[s];//策越
 		
 		a:        //----------决定，trading decision. 
 		s:        //----------策越个数
 		BUY;	  // +1
 		SELL;     // -1
 		HOLD; 	  // 0
-
+		AGENT_PRICE_LENGTH;//20
 Strategy:
 		t:         //---------轮数
 		m:         //---------记忆长度
-		outcome[]; //---策越决定，length = 2^m, value = -1,0, or +1.
+		outcome[2^m]; //---策越决定，length = 2^m, value = -1,0, or +1.
 		v_a:       //---------策略的虚拟决策
-		v_k:       //---------策略的虚拟头寸
+		v_position_series[STRATEGY_PRICE_LENGTH]:       //---------策略的虚拟头寸
 		Max_k:     //---------最大头寸
-		v_wealth:  //---------策略的虚拟财富
+		v_wealth_series[STRATEGY_PRICE_LENGTH]:  //---------策略的虚拟财富
+		
+		
+		STRATEGY_PRICE_LENGTH;//5
 		
 2
 程序实现流程:
 (1)初始化
 Game的初始化：
    0.获取传入参数s.m.n
-   1.初始化t=0, Pr=0,Pr_next=0,A=0,,Pt_next=0
+   1.初始化t=0,A=0,tranction_price_series
    2.初始化n个agents
-   3.载入price_series
-   4.根据price_series初始化state.
+   3.载入realmarket_price_series
+   4.根据realmarket_price_series初始化state.
    
 Agents的初始化：
    0.获取传入参数s,m
-   1.初始化k=0,cash=0,wealth=0,a=0;
+   1.初始化k=0,cash_series=0,wealth_series=0,a=0;
    2.初始化s个策越
    
 Strategy的初始化：
    0.获取传入参数m
-   1.初始化v_k=0,v_wealth=0.
+   1.初始化v_k=0,v_wealth_series=0.
    2.初始化2^m个策略决定outcome[2^m];
    
 (2)第T步计算（模拟模型交易）
-   1. Game:  根据T轮的历史价格序列price_series中最近m轮价格波动计算市场状态state.
+   1. Game:  根据T轮的历史价格序列realmarket_price_series中最近m轮价格波动计算市场状态state.
    2. Strategy:每个Strategy根据state计算得虚拟决策v_a.
    3. Agent: 每个agent根据state从s个策略中选出最优策越，Agents的决策即为最优策略的决策Agent.a = best{his Strategy.v_a}.（注意，这里有个时间先后顺序的问题，agent这时对市场做了决策并提交了订单，但交易价格还未产生，财富不能更新，头寸k也不能更新，故不更新轮数t）。
    4. Game:  获取真实人的决策，再根据Agent的a计算策略积累量A.
-   5. Game:  根据A和Pr计算第T+1轮的真实市场价格Pr_next.
-   6. Game:  根据第T轮真实市场价格Pr和第T+1轮真实市场价格Pr_next计算第T轮的交易价格Pt.
-   7. Strategy:第T轮的交易价格Pt产生后, Strategy根据此时的虚拟财富v_wealth和头寸v_k计算出strategy的虚拟财富: Strategy.v_wealth = Strategy.v_wealth + Strategy.v_k *(Pt_next-Pt).
-   8. Strategy:更新strategy的头寸: Strategy.v_k = max{-Max_k, min{K, Strategy.v_k+Strategy.a}},并更新Strategy的时刻t至T+1时刻.
-   9. Agent: 第T轮的交易价格Pt产生后，Agent根据此时的财富wealth和头寸k就能计算出agent第T+1轮的财富：Agent.wealth = Agent.wealth + Agent.k *(Pt_next-Pt).
-   10.Agent: 更新agent的头寸: Agent.v_k = max{-Max_k, min{K, Agent.v_k + Agent.a}},并更新Agent的时刻t至T+1时刻.
-   11.Game:  第T至T+1轮交易完成，把Game的时间更新到T+1,令Pr = Pr_next, Pr_next=0.将Pr写入price_series中，等待下一轮的进行。 
+   5. Game:  根据A和realmarket_price_series[T]计算第T+1轮的真实市场价格realmarket_price_series[T+1].
+   6. Game:  根据第T轮真实市场价格realmarket_price_series[T]和第T+1轮真实市场价格realmarket_price_series[T+1]计算第T轮的交易价格tranction_price_series[T].
+   7. Strategy:第T轮的交易价格tranction_price_series[T]产生后, Strategy根据此时的虚拟财富v_wealth_series[T-1]和头寸v_position_series[T-1]计算出strategy的虚拟财富: Strategy.v_wealth_series[T] = Strategy.v_wealth_series[T-1] + Strategy.v_position[T-1] *(tranction_price_series[T]-tranction_price_series[T-1]).
+   8. Strategy:更新strategy的头寸: Strategy.v_position_series[T] = max{-Max_k, min{MAX_k, Strategy.v_position_series[T-1]+Strategy.a}},并更新Strategy的时刻t至T+1时刻.
+   9. Agent: 第T轮的交易价格Pt产生后，Agent根据此时的财富wealth和头寸k就能计算出agent第T+1轮的财富：Agent.v_wealth_series[T] = Agent.v_wealth_series[T-1] + Agent.v_position[T-1] *(tranction_price_series[T]-tranction_price_series[T-1]).
+   10.Agent: 更新agent的头寸: Agent.v_position_series[T] = max{-Max_k, min{MAX_k, Agent.v_position_series[T-1]+Agent.a}},并更新Agent的时刻t至T+1时刻.
+   11.Game:  第T至T+1轮交易完成，把Game的时间更新到T+1。 
    12.Game:  计算真实人的财富，输出Game这轮的信息。
+(3)类的方法
+Game:
+   Game();//构造函数：完成初始化工作
+   loadPrice();//从数据库载入价格序列realmarket_price_series
+   savePrice();//写入数据序列realmarket_price_series到数据库
+   getState();//根据记忆长度m获取市场状态state
+   makeDecision();//Game的agent,agent的strategy做决策(计算agent.a, strategy.v_a)
+   cal_A();//计算策越积累量A=sum(agent.a)
+   cal_realmarket_price_T_1();//计算T+1轮真实市场价格
+   cal_transction_price_T();//计算T时刻交易价格
+   cal_transaction_diff();//计算交易价格差 tranction_diff = tranction_price_series[T]-tranction_price_series[T-1].
+   doTransaction(tranction_diff);//Game的agent, agent的strategy根据T和T-1时刻交易价格完成头寸，财富的更新计算
+   finishTrans();//做交易完成后的工作，更新时间t至T+1,
+   explore();//向客户端输出交易完成后各种信息：真人的财富，agent, strategy的信息等
+   
+   get_realmarket_price_series(); //返回真实财富序列
+   get_buy_num();  返回买的人数
+   get_sell_num(); 返回卖的人数
+   get_keep_num(); 返回不做操作人数
+   
+Agent:
+   Agent();//初始化
+   strategy_makeDecision(state); //agent的每个策略做决策
+   choose_strategy();//从strategy中选择最优策略
+   strategy_update_info(tranction_diff);//策略更虚拟新头寸，财富
+   update_info(tranction_diff);//更新头寸，财富
+   doTransaction(tranction_diff); //agent做交易，调用以上两个函数
+   finishTrans(); //交易完成后，更新时间等扫尾工作
+   
+   get_analysis();//做统计，如返回best worst, mid agent等
+   
+   getDecision(); //返回决策
+   getWealth(); //返回虚拟财富序列
+   
+Strategy:
+   Strategy();//初始化
+   make_virtual_decision(state);//strategy做出决策
+   update_virtual_info(tranction_diff);//更新头寸，财富等
+   finishTrans(); //交易完成后，更新时间等扫尾工作
+   
+   get_virtual_Decision(); //返回虚拟决策
+   get_virtual_Wealth(); //返回虚拟财富序列
+   
