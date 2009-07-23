@@ -41,6 +41,7 @@ Strategy:
 		t:         //---------轮数
 		m:         //---------记忆长度
 		outcome[]; //---策越决定，length = 2^m, value = -1,0, or +1.
+		v_a:       //---------策略的虚拟决策
 		v_k:       //---------策略的虚拟头寸
 		Max_k:     //---------最大头寸
 		v_wealth:  //---------策略的虚拟财富
@@ -67,9 +68,14 @@ Strategy的初始化：
    
 (2)第T步计算（模拟模型交易）
    1. Game:  根据T轮的历史价格序列price_series中最近m轮价格波动计算市场状态state.
-   2. Agent: 每个agent根据state从s个策略中选出最有策越，即计算得到Agents的a，再计算头寸k。
-   3. Game:  根据Agent的a计算策略积累量A.
-   4. Game:  根据A和Pr计算第T+1轮的真实市场价格Pr_next.
-   5. Game:  根据第T轮真实市场价格Pr和第t+1轮真实市场价格Pr_next计算第T轮的交易价格
-   6. Agent: 第T轮的交易价格产生后，
-
+   2. Strategy:每个Strategy根据state计算得虚拟决策v_a.
+   3. Agent: 每个agent根据state从s个策略中选出最优策越，Agents的决策即为最优策略的决策Agent.a = best{his Strategy.v_a}.（注意，这里有个时间先后顺序的问题，agent这时对市场做了决策并提交了订单，但交易价格还未产生，财富不能更新，头寸k也不能更新，故不更新轮数t）。
+   4. Game:  获取真实人的决策，再根据Agent的a计算策略积累量A.
+   5. Game:  根据A和Pr计算第T+1轮的真实市场价格Pr_next.
+   6. Game:  根据第T轮真实市场价格Pr和第T+1轮真实市场价格Pr_next计算第T轮的交易价格Pt.
+   7. Strategy:第T轮的交易价格Pt产生后, Strategy根据此时的虚拟财富v_wealth和头寸v_k计算出strategy的虚拟财富: Strategy.v_wealth = Strategy.v_wealth + Strategy.v_k *(Pt_next-Pt).
+   8. Strategy:更新strategy的头寸: Strategy.v_k = max{-Max_k, min{K, Strategy.v_k+Strategy.a}},并更新Strategy的时刻t至T+1时刻.
+   9. Agent: 第T轮的交易价格Pt产生后，Agent根据此时的财富wealth和头寸k就能计算出agent第T+1轮的财富：Agent.wealth = Agent.wealth + Agent.k *(Pt_next-Pt).
+   10.Agent: 更新agent的头寸: Agent.v_k = max{-Max_k, min{K, Agent.v_k + Agent.a}},并更新Agent的时刻t至T+1时刻.
+   11.Game:  第T至T+1轮交易完成，把Game的时间更新到T+1,令Pr = Pr_next, Pr_next=0.将Pr写入price_series中，等待下一轮的进行。 
+   12.Game:  计算真实人的财富，输出Game这轮的信息。
