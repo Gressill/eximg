@@ -48,7 +48,17 @@ Strategy:
 		
 		
 		STRATEGY_PRICE_LENGTH;//5
-		
+
+Realman:
+        t;//轮数
+        wealth_series[REALMAN_LENGTH];//财富序列
+        a;        //决策
+        
+        REALMAN_LENGTH;//100
+        
+        
+        
+        
 2
 程序实现流程:
 (1)初始化
@@ -73,7 +83,7 @@ Strategy的初始化：
    1. Game:  根据T轮的历史价格序列realmarket_price_series中最近m轮价格波动计算市场状态state.
    2. Strategy:每个Strategy根据state计算得虚拟决策v_a.
    3. Agent: 每个agent根据state从s个策略中选出最优策越，Agents的决策即为最优策略的决策Agent.a = best{his Strategy.v_a}.（注意，这里有个时间先后顺序的问题，agent这时对市场做了决策并提交了订单，但交易价格还未产生，财富不能更新，头寸k也不能更新，故不更新轮数t）。
-   4. Game:  获取真实人的决策，再根据Agent的a计算策略积累量A.
+   4. Game:  获取真实人的决策Realman.a，再根据Agent的a计算策略积累量A.
    5. Game:  根据A和realmarket_price_series[T]计算第T+1轮的真实市场价格realmarket_price_series[T+1].
    6. Game:  根据第T轮真实市场价格realmarket_price_series[T]和第T+1轮真实市场价格realmarket_price_series[T+1]计算第T轮的交易价格tranction_price_series[T].
    7. Strategy:第T轮的交易价格tranction_price_series[T]产生后, Strategy根据此时的虚拟财富v_wealth_series[T-1]和头寸v_position_series[T-1]计算出strategy的虚拟财富: Strategy.v_wealth_series[T] = Strategy.v_wealth_series[T-1] + Strategy.v_position[T-1] *(tranction_price_series[T]-tranction_price_series[T-1]).
@@ -82,9 +92,12 @@ Strategy的初始化：
    10.Agent: 更新agent的头寸: Agent.v_position_series[T] = max{-Max_k, min{MAX_k, Agent.v_position_series[T-1]+Agent.a}},并更新Agent的时刻t至T+1时刻.
    11.Game:  第T至T+1轮交易完成，把Game的时间更新到T+1。 
    12.Game:  计算真实人的财富，输出Game这轮的信息。
+   
+   
 (3)类的方法
 Game:
    Game();//构造函数：完成初始化工作
+   Play(); //当收到客服端发来的请求就Play game。
    loadPrice();//从数据库载入价格序列realmarket_price_series
    savePrice();//写入数据序列realmarket_price_series到数据库
    getState();//根据记忆长度m获取市场状态state
@@ -124,4 +137,11 @@ Strategy:
    
    get_virtual_Decision(); //返回虚拟决策
    get_virtual_Wealth(); //返回虚拟财富序列
+   
+Realman:
+   makeDecision();//做决策
+   cal_wealth(tranction_diff);//计算财富
+   
+   get_wealth();//返回财富价格序列
+  
    
