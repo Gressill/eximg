@@ -32,9 +32,9 @@ public class Constant {
 
 	public static int userChoise = 0;
 
-	public static int buyChoise = 1;
-	public static int sellChoise = -1;
-	public static int holdChoise = 0;
+	public static final int BUY_CHOISE = 2;
+	public static final int SELL_CHOISE = 0;
+	public static final int HOLD_CHOISE = 1;
 
 	public static int dVolatility = 5;
 
