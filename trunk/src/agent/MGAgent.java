@@ -11,8 +11,8 @@ public class MGAgent extends Agent {
 	 * 
 	 */
 	private int historySize; // Size of history space =
-								// (actionChooseNumber^memorySize) where agent
-								// looks default as 27
+	// (actionChooseNumber^memorySize) where agent
+	// looks default as 27
 	// at last M time steps
 	/**
 	 * strategySize:
@@ -21,13 +21,16 @@ public class MGAgent extends Agent {
 	private int strategySize; // Number of strategies default as 2
 
 	private int[][] strategiesArray; // The strategies: an
-										// (strategiesNum*historySize) array
+	// (strategiesNum*historySize) array
 
 	private double[] virtualScores; // The strategies' virtual scores
 
 	private int[] determining; // Array determining active strategy
-	
+
 	private int mgAgentScore = 0;
+	
+	//头寸
+	private int position = 0;
 
 	public MGAgent(int memorySize, int strategySize) {
 
@@ -35,10 +38,10 @@ public class MGAgent extends Agent {
 		this.strategySize = strategySize;
 
 		strategiesArray = new int[strategySize][historySize]; // The
-																// strategies:
-																// an
-																// (strategiesNum*historySize)
-																// array
+		// strategies:
+		// an
+		// (strategiesNum*historySize)
+		// array
 		virtualScores = new double[strategySize];
 		determining = new int[strategySize];
 		determining[0] = (Math.random() < 0.5) ? 0 : 1;
@@ -58,7 +61,13 @@ public class MGAgent extends Agent {
 			for (int j = 0; j < historySize; j++) {
 				// this is how the game works,use random num to simulate the
 				// people's select & init strategies
-				strategiesArray[i][j] = (Math.random() < 0.5) ? -1 : 1;
+				if (Math.random() <= 0.33) {
+					strategiesArray[i][j] = Constant.SELL_CHOISE;
+				} else if (Math.random() <= 0.66) {
+					strategiesArray[i][j] = Constant.HOLD_CHOISE;
+				} else {
+					strategiesArray[i][j] = Constant.BUY_CHOISE;
+				}
 			}
 		}
 		return strategiesArray;
@@ -91,16 +100,15 @@ public class MGAgent extends Agent {
 	 * @param num:just for test,meanness
 	 */
 
-
 	//public boolean feedback(int historyChoise, int thisTurnPrice,int num) {
 	public boolean feedback(int thisTurnPrice) {
-				//update virtuakScore and agents score
+		//update virtuakScore and agents score
 		if (thisTurnPrice * action < 0) {
 			virtualScores[determining[0]]++;
-			mgAgentScore = mgAgentScore+Math.abs(thisTurnPrice);
+			mgAgentScore = mgAgentScore + Math.abs(thisTurnPrice);
 		} else if (thisTurnPrice * action > 0) {
 			virtualScores[determining[0]]--;
-			mgAgentScore = mgAgentScore-Math.abs(thisTurnPrice);
+			mgAgentScore = mgAgentScore - Math.abs(thisTurnPrice);
 
 		}
 		//// 根据历史虚分值选择策略
@@ -114,12 +122,20 @@ public class MGAgent extends Agent {
 		}
 		return true;
 	}
-	
+
 	public double getScore() {
 		return mgAgentScore;
 	}
 
 	public int getAction() {
 		return this.action;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
 	}
 }
