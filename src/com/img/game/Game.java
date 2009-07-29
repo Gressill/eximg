@@ -1,6 +1,9 @@
 package com.img.game;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
+
+import server.DatabaseOperation;
 
 import com.img.agent.Agent;
 
@@ -34,6 +37,23 @@ public class Game {
 	}
 
 	/**
+	 * 
+	 * @param memory
+	 *            number
+	 * @param agent
+	 *            number
+	 * @param strategy
+	 *            number
+	 */
+	public Game(int memory, int strategy, int agent) {
+		m = memory;
+		s = strategy;
+		n = agent;
+		
+		loadPrice();
+	}
+
+	/**
 	 * 当收到客服端发来的请求就Play game。
 	 */
 	public void Play() {
@@ -45,7 +65,35 @@ public class Game {
 	 */
 	public void loadPrice() {
 		// TODO Auto-generated method stub
-
+		
+	}
+	
+	/**
+	 * load history from database
+	 * @param indexNum: number of price,default is 60
+	 * @return history price list
+	 */
+	public ArrayList<Double> getHistoryPrice(int indexNum) {
+		String sqlString = "select price from price_info order by price_id desc limit "+indexNum;
+		ResultSet res;
+		DatabaseOperation databaseOperation = new DatabaseOperation();
+		if(databaseOperation.OpenConnection())
+		{
+			price_series.clear();
+			res = databaseOperation.ExecuteQuery(sqlString);
+			//处理结果集
+			try {
+				while (res.next()) {
+					double tempPrice = res.getDouble("price");
+					price_series.add(tempPrice);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally{
+				databaseOperation.CloseConnection();
+			}
+		}
+		return price_series;
 	}
 
 	/**
@@ -58,7 +106,8 @@ public class Game {
 
 	/**
 	 * 根据记忆长度m获取市场状态state
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int getState() {
 		// TODO Auto-generated method stub
@@ -115,7 +164,7 @@ public class Game {
 	}
 
 	/**
-	 *  做交易完成后的工作，更新时间t至T+1
+	 * 做交易完成后的工作，更新时间t至T+1
 	 */
 	public void finishTrans() {
 		// TODO Auto-generated method stub
@@ -123,7 +172,7 @@ public class Game {
 	}
 
 	/**
-	 *  向客户端输出交易完成后各种信息：真人的财富，agent, strategy的信息等
+	 * 向客户端输出交易完成后各种信息：真人的财富，agent, strategy的信息等
 	 */
 	public void explore() {
 		// TODO Auto-generated method stub
@@ -131,7 +180,7 @@ public class Game {
 	}
 
 	/**
-	 *  返回真实财富序列
+	 * 返回真实财富序列
 	 */
 	public void getRealmarketPriceSeries() {
 		// TODO Auto-generated method stub
@@ -139,7 +188,7 @@ public class Game {
 	}
 
 	/**
-	 *  返回买的人数
+	 * 返回买的人数
 	 */
 	public int getBuyNum() {
 		// TODO Auto-generated method stub
@@ -147,7 +196,7 @@ public class Game {
 	}
 
 	/**
-	 *  返回卖的人数
+	 * 返回卖的人数
 	 */
 	public int getSellNum() {
 		// TODO Auto-generated method stub
@@ -155,7 +204,7 @@ public class Game {
 	}
 
 	/**
-	 *  返回不做操作人数
+	 * 返回不做操作人数
 	 */
 	public int getKeepNum() {
 		// TODO Auto-generated method stub
