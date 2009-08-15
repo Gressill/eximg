@@ -15,20 +15,27 @@ public class Game {
 	private int A; // ----------第t轮做决策时的决策积累量，extended demand
 	private double Pt; // ----------第t轮交易价格 the tranction price
 	private double PtNext; // ----------第t+1轮的交易价格
+	private Agent[] agents;
 	private int state; // ----------t时刻市场状态，one of the
 	// 2m strings of the m most
 	// recent outcomes of the sign
 	// of price changes.
 
-	private ArrayList<Double> price_series; // -----历史价格序列，如过去100轮价格
-
-	private ArrayList<Agent> agents; // agents
+	private ArrayList<Double> priceSeries; // -----历史价格序列，如过去100轮价格
+	private int[] currentChoise;// 存放每个agent的选择的数组
+	private double currentPrice = 0;
+	//private ArrayList<Agent> agents; // agents
+	private int[] historyChoise;
 
 	private int m; // 记忆长度
 	private int s; // 策越个数
 	private int n; // agents个数
 
-	private int PRICE_LENGTH; // 100
+	private int lastBuyNum;
+	private int lastSellNum;
+	private int lastholdNum;
+
+	private int priceLength; // 100
 	private double GAMA; // ----------the sensitivity of price increment.
 	private double BETA; // ----------the market impact factor.
 
@@ -49,7 +56,7 @@ public class Game {
 		m = memory;
 		s = strategy;
 		n = agent;
-		
+
 		loadPrice();
 	}
 
@@ -58,6 +65,41 @@ public class Game {
 	 */
 	public void Play() {
 
+		// loadHistory();
+		t++;
+		this.lastBuyNum = 0;
+		this.lastSellNum = 0;
+		this.lastholdNum = 0;
+		for (int i = 0; i < (agents.length - 1); i++) {
+			// System.out.println(historyChoise[i]);
+			agents[i].agentAct(historyChoise[i]);// 根据历史来决定买和卖，也就是action的值，为-1或者1
+			// System.out.println("this turn historyChoise["+i+"]
+			// is:"+historyChoise[i]);
+			currentChoise[i] = (int) agents[i].getDecision();
+			if (currentChoise[i] == -1) {
+				lastBuyNum++;
+			} else if (currentChoise[i] == 1) {
+				lastSellNum++;
+			} else if(currentChoise[i] == 0){
+				lastholdNum++;
+			}else {
+				System.out.println("currentChoise[i] is:" + currentChoise[i]);
+			}
+			// System.out.println("current"+i+"Choise"+currentChoise[i]);
+		}
+		for (int i = 0; i < (agents.length); i++) {
+			// agent[i].feedback(historyChoise[i],caculateThisTurnPrice(currentChoise),
+			// i);
+			agents[i].feedback(calTransctionPriceT());
+			// agents[i].feedback(caculateThisTurnPrice(currentChoise),i);
+			updateHistory(historyChoise, currentChoise, i);
+		}
+		// 得到该轮的价格 feedback to client
+		currentPrice = calTransctionPriceT(currentChoise)
+				+ agents[agents.length - 1].getDecision();
+		this.updateAgentScore(agents);
+		// System.out.println("currentPrice"+currentPrice);
+		//System.out.println("currentPrice" + currentPrice);
 	}
 
 	/**
@@ -65,35 +107,37 @@ public class Game {
 	 */
 	public void loadPrice() {
 		// TODO Auto-generated method stub
-		
+		getHistoryPrice(50);
 	}
-	
+
 	/**
 	 * load history from database
-	 * @param indexNum: number of price,default is 60
+	 * 
+	 * @param indexNum:
+	 *            number of price,default is 60
 	 * @return history price list
 	 */
 	public ArrayList<Double> getHistoryPrice(int indexNum) {
-		String sqlString = "select price from price_info order by price_id desc limit "+indexNum;
+		String sqlString = "select price from price_info order by price_id desc limit "
+				+ indexNum;
 		ResultSet res;
 		DatabaseOperation databaseOperation = new DatabaseOperation();
-		if(databaseOperation.OpenConnection())
-		{
-			price_series.clear();
+		if (databaseOperation.OpenConnection()) {
+			priceSeries.clear();
 			res = databaseOperation.ExecuteQuery(sqlString);
-			//处理结果集
+			// 处理结果集
 			try {
 				while (res.next()) {
 					double tempPrice = res.getDouble("price");
-					price_series.add(tempPrice);
+					priceSeries.add(tempPrice);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}finally{
+			} finally {
 				databaseOperation.CloseConnection();
 			}
 		}
-		return price_series;
+		return priceSeries;
 	}
 
 	/**
@@ -208,7 +252,7 @@ public class Game {
 	 */
 	public int getKeepNum() {
 		// TODO Auto-generated method stub
-		return 0;
+		return lastholdNum;
 	}
 
 	public int getT() {
@@ -263,21 +307,21 @@ public class Game {
 		this.state = state;
 	}
 
-	public ArrayList<Double> getPrice_series() {
-		return price_series;
+	public ArrayList<Double> getPriceSeries() {
+		return priceSeries;
 	}
 
 	public void setPrice_series(ArrayList<Double> price_series) {
-		this.price_series = price_series;
+		this.priceSeries = price_series;
 	}
 
-	public ArrayList<Agent> getAgents() {
-		return agents;
-	}
-
-	public void setAgents(ArrayList<Agent> agents) {
-		this.agents = agents;
-	}
+//	public ArrayList<Agent> getAgents() {
+//		return agents;
+//	}
+//
+//	public void setAgents(ArrayList<Agent> agents) {
+//		this.agents = agents;
+//	}
 
 	public int getM() {
 		return m;
@@ -303,12 +347,12 @@ public class Game {
 		this.n = n;
 	}
 
-	public int getPRICE_LENGTH() {
-		return PRICE_LENGTH;
+	public int getPriceLength() {
+		return priceLength;
 	}
 
-	public void setPRICE_LENGTH(int price_length) {
-		PRICE_LENGTH = price_length;
+	public void setPriceLength(int price_length) {
+		priceLength = price_length;
 	}
 
 	public double getGAMA() {
