@@ -81,8 +81,8 @@ public class Agent extends Strategy {
 	/**
 	 * ·µ»Ø¾ö²ß
 	 */
-	public void getDecision() {
-
+	public int getDecision() {
+		return 0;
 	}
 
 	/**
