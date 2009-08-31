@@ -75,7 +75,7 @@ public class Img {
 
 	// ≥ı ºªØagent
 	for (int i = 0; i < (agents.length - 1); i++) {
-	    agents[i] = new MGAgent(m, s);
+	    agents[i] = new MGAgent(m, s,n);
 	}
 
 	// game plays once to initialise
