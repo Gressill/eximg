@@ -1,4 +1,4 @@
-package util;
+package com.img.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,9 +32,9 @@ public class Constant {
 
 	public static int userChoise = 0;
 
-	public static final int BUY_CHOISE = 1;
-	public static final int SELL_CHOISE = -1;
-	public static final int HOLD_CHOISE = 0;
+	public static final int BUY_CHOISE = 2;
+	public static final int SELL_CHOISE = 0;
+	public static final int HOLD_CHOISE = 1;
 
 	public static int dVolatility = 5;
 
@@ -57,12 +57,6 @@ public class Constant {
 	public static String numberOfTurnsShouldPlay = "You mush play 200+ turns to challenge for the hiscore.";
 
 	public static final String CORSS_DOMAIN = "<?xml version=\"1.0\"?><!DOCTYPE cross-domain-policy SYSTEM \"http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd\"><cross-domain-policy><allow-access-from domain=\"*\" to-ports=\"*\" /></cross-domain-policy>";
-
-	public static final int k = 500;//×î´óÍ·´ç
-	
-	public static final double ALPHA = 0.5;
-	
-	public static final double BETA = 0.5;
 
 	public static String betMsg = "Bet on next price move";
 
