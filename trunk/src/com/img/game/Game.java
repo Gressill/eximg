@@ -3,7 +3,7 @@ package com.img.game;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import server.DatabaseOperation;
+import com.img.util.DatabaseOperation;
 
 import com.img.agent.Agent;
 
