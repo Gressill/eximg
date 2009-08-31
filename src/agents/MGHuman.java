@@ -136,7 +136,7 @@ public class MGHuman extends Agent {
 	 * @param agent
 	 * @return
 	 */
-	public boolean feedback(int thisTurnPrice) {
+	public boolean feedback(int thisTurnPrice,int nothing) {
 		turns++;
 		if (humanAction == -1) {
 				mgHumanScore = mgHumanScore + thisTurnPrice;
