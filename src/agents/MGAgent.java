@@ -19,10 +19,12 @@ public class MGAgent extends Agent {
 
 	private int[][] virtualPosition; // The strategies: an
 	// (strategiesNum*historySize) array
+	
+	private double[][] virtualCash; 
 
 	private double[] virtualScores; // The strategies' virtual scores
 
-	private double[] virtualWealth;
+	private double[][] virtualWealth;
 
 	private int[] actionArray;
 
@@ -40,14 +42,15 @@ public class MGAgent extends Agent {
 		this.strategySize = strategySize;
 		realPosition = 0;
 
+		virtualCash = new double[agentNum][historySize];
 		virtualPosition = new int[agentNum][historySize];
+		virtualWealth = new double[agentNum][historySize];
 		strategiesArray = new int[strategySize][historySize]; // The
 		// strategies:
 		// an
 		// (strategiesNum*historySize)
 		// array
 		virtualScores = new double[strategySize];
-		virtualWealth = new double[strategySize];
 		//position = new int[Constant.k];
 		determining = (int) (strategySize * Math.random());
 
@@ -75,6 +78,7 @@ public class MGAgent extends Agent {
 				} else {
 					strategiesArray[i][j] = Constant.BUY_CHOISE;
 				}
+				//strategiesArray[i][j] = (Math.random() < 0.5) ? -1 : 1;
 			}
 		}
 		return strategiesArray;
@@ -188,6 +192,13 @@ public class MGAgent extends Agent {
 		}
 		return true;
 	}
+	
+	private double caculateVirtualWealth(int agentNum,int i,double price) {
+		//double tempWealrh = 0;
+		virtualWealth[agentNum][i] = virtualCash[agentNum][i]+virtualPosition[agentNum][i]*price;
+		return virtualWealth[agentNum][i];
+	}
+	
 	public double getScore() {
 		return mgAgentScore;
 	}
