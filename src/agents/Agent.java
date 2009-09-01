@@ -48,7 +48,7 @@ public abstract class Agent {
 		return true;
 	}
 	
-	public boolean feedback(int thisTurnPrice,int j) {
+	public boolean feedback(double thisTurnPrice,int j) {
 
 		return true;
 	}

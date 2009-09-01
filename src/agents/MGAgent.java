@@ -32,7 +32,7 @@ public class MGAgent extends Agent {
 
 	private int determining; // Array determining active strategy
 
-	private int mgAgentScore = 0;
+	private double mgAgentScore = 0;
 
 	public MGAgent(int memorySize, int strategySize, int agentNum) {
 
@@ -120,7 +120,7 @@ public class MGAgent extends Agent {
 	 *            :just for test,meanness
 	 */
 
-	public boolean feedback(int realTransPrice, int agentNum) {
+	public boolean feedback(double realTransPrice, int agentNum) {
 		// update position and agents score
 		if (action < 0) {
 			// 实际分数
