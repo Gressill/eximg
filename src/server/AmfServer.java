@@ -138,7 +138,7 @@ public class AmfServer {
 							int memorySize = (Integer) message.get("m");
 							int strategySize = (Integer) message.get("s");
 							int agentNumber = (Integer) message.get("n");
-							//agentNumber = 4;
+							agentNumber = 4;
 							// iGame.init();
 							iGame.init(memorySize, strategySize, agentNumber);
 							mgHuman = iGame.getHumanAgent();
