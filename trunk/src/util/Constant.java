@@ -20,9 +20,9 @@ public class Constant {
 
 	public static int actionChooseNumber = 3;// we have buy,sell,hold
 
-	public static int agentNumber = 94;
+	public static int AGENTNUMBER = 94;
 
-	public static int memorySize = 3;
+	public static int MEMORYSIZE = 3;
 
 	public static int strategySize = 2;
 
@@ -64,7 +64,7 @@ public class Constant {
 	
 	public static final double BETA = 0.5;
 
-	public static String betMsg = "Bet on next price move";
+	public static double FIRSTPRICE = 0;
 
 	public static int buyers = 0;
 

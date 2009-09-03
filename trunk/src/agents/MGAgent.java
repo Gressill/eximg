@@ -168,7 +168,7 @@ public class MGAgent extends Agent {
 	    // virtualScores[i]);
 	    System.out.println("agent[" + agentNum + "]v[" + i + "]cash is :"
 		    + virtualCash[agentNum][i]
-	            + "  position is :"+virtualPosition[agentNum][i]+" w is"
+	            + "  Í·´ç is :"+virtualPosition[agentNum][i]+" ²Æ¸» is "
 		    + caculateVirtualWealth(agentNum, i, realTransPrice)
 		    + " choose is :" + determining
 		    +" action is: "+strategiesArray[determining][historyState]);
