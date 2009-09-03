@@ -44,9 +44,10 @@ public class Game implements Strategy {
 	private static double lastExpectPrice;
 
 	//
-	public Game(Agent[] agents, int m) {
+	public Game(Agent[] agents) {
 		this.agents = agents; // agents
-		this.P = 1 << m;
+		this.P = 1 << Constant.MEMORYSIZE;
+		lastExpectPrice = Constant.FIRSTPRICE;
 		currentChoise = new int[agents.length];
 		historyChoise = new int[agents.length];
 		historyChoiseStatic = (int) (P * Math.random());
@@ -117,6 +118,7 @@ public class Game implements Strategy {
 		}
 		// 得到该轮的价格 feedback to client
 		currentPrice += caculatePrice(currentChoise) + humanAction;
+		currentPrice = caculateTransPrice(currentPrice);
 		for (int i = 0; i < (agents.length); i++) {
 			// agents[i].feedback(caculateThisTurnPrice(currentChoise));
 			agents[i].feedback(currentPrice, i);
@@ -136,10 +138,11 @@ public class Game implements Strategy {
 	 *            ：储存该轮的所有agent的决定（买或者卖,1/-1）
 	 * @return currentPrice：每一轮的价格
 	 */
-	private double caculateTransPrice(int thisTurnPrice) {
+	private double caculateTransPrice(Double thisTurnPrice) {
 		double tempTransPrice = 0;
 		tempTransPrice = (1 - Constant.BETA) * lastExpectPrice + Constant.BETA
 				* thisTurnPrice;
+		lastExpectPrice = thisTurnPrice;
 		return tempTransPrice;
 	}
 
@@ -210,8 +213,8 @@ public class Game implements Strategy {
 		historyChoise[i] = ((3 * historyChoise[i]) + tempCurrentChoise) % P;
 	}
 
-	private void caculateVolatility() {
-	}
+//	private void caculateVolatility() {
+//	}
 
 	/**
 	 * this to return best,worse,average score of agents
@@ -297,6 +300,14 @@ public class Game implements Strategy {
 	public int getLastSellNum() {
 		// System.out.println(lastSellNum);
 		return lastSellNum;
+	}
+
+	public static void setLastExpectPrice(double lastExpectPrice) {
+	    Game.lastExpectPrice = lastExpectPrice;
+	}
+
+	public static double getLastExpectPrice() {
+	    return lastExpectPrice;
 	}
 
 }

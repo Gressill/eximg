@@ -138,11 +138,14 @@ public class AmfServer {
 							int memorySize = (Integer) message.get("m");
 							int strategySize = (Integer) message.get("s");
 							int agentNumber = (Integer) message.get("n");
-							agentNumber = 4;
+							if (agentNumber == 600) {
+							    agentNumber = 4;
+							}							
 							// iGame.init();
 							iGame.init(memorySize, strategySize, agentNumber);
 							mgHuman = iGame.getHumanAgent();
 							hisPriceList = iGame.getHistoryPrice(60);
+							Constant.FIRSTPRICE = hisPriceList.get(59);
 							map.put("event", "startAction");
 							map.put("historyPrice", hisPriceList);
 							sentSerializationMeg(map);

@@ -32,7 +32,7 @@ public class Img {
 
     private MGHuman mghuman;
 
-    private int[] initCurrentChoise;
+    //private int[] initCurrentChoise;
 
     private double currentPrice;
 
@@ -70,6 +70,7 @@ public class Img {
 	// change the agentNumber to configured value
 	agents = new Agent[n + 1]; // number of
 	agents[n] = this.mghuman;
+	Constant.MEMORYSIZE = m;
 	// computer-controlled
 	// agents PLUS human
 
@@ -80,27 +81,7 @@ public class Img {
 
 	// game plays once to initialise
 	// game = new Game(agents, 0, 200 * (1 << 3));
-	game = new Game(agents, m);
-
-	initCurrentChoise = game.getCurrentChoise();
-
-	// price.set(0,0);
-	//
-	// for (int i = 0; i < price.size() - 1; ++i) {
-	// //int tempPrice = price.get(i) +
-	// initCurrentChoise[(initCurrentChoise.length - price.size() - 1) + i];
-	// //int tempPrice = price.get(i) + game.getCurrentPrice();
-	// //price.set(i+1, tempPrice);
-	// //System.out.println("price["+i+"]"+price[i]);
-	// //System.out.println((initCurrentChoise.length - price.length - 1) +
-	// i);
-	// }
-
-	// price = null;
-	// initCurrentChoise = null;
-	//
-	// agents[agents.length - 1] = new MGHuman(agents);
-
+	game = new Game(agents);
     }
 
     public void playGame() {
