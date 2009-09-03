@@ -142,17 +142,17 @@ public class MGAgent extends Agent {
 	for (int i = 0; i < strategySize; i++) {
 	    if (strategiesArray[i][historyState] < 0) {
 		// 实际分数
-		if (virtualPosition[agentNum][i] > 0) {
+		//if (virtualPosition[agentNum][i] > 0) {
 		    virtualCash[agentNum][i] += realTransPrice;
-		    virtualPosition[agentNum][i]--;
-		}
+		    //virtualPosition[agentNum][i]--;
+		//}
 		// System.err.println("1 work is ");
 	    } else if (strategiesArray[i][historyState] == 0) {
 		// System.err.println("2 work");
 	    } else if (strategiesArray[i][historyState] > 0) {
 		// System.err.println("3 work");
 		virtualCash[agentNum][i] -= realTransPrice;
-		virtualPosition[agentNum][i]++;
+		//virtualPosition[agentNum][i]++;
 	    } else {
 		System.err.println("File:mgagent.java,L160 thisTurnPrice is:"
 			+ strategiesArray[i][historyState]);
