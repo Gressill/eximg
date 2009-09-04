@@ -76,9 +76,9 @@ public class Game implements Strategy {
 			// 为-1
 			// 或者1
 			currentChoise[i] = (int) agents[i].getAction();
-			if (currentChoise[i] == -1) {
+			if (currentChoise[i] == 1) {
 				lastBuyNum++;
-			} else if (currentChoise[i] == 1) {
+			} else if (currentChoise[i] == -1) {
 				lastSellNum++;
 			} else if (currentChoise[i] == 0) {
 				lastHoldNum++;
@@ -88,11 +88,11 @@ public class Game implements Strategy {
 			}
 			// System.out.println("current"+i+"Choise"+currentChoise[i]);
 		}
-		if (humanAction == -1) {
+		if (humanAction == 1) {
 			tempLastBuyNum = lastBuyNum + 1;
 			tempLastSellNum = lastSellNum;
 			tempLastHoldNum = lastHoldNum;
-		} else if (humanAction == 1) {
+		} else if (humanAction == -1) {
 			tempLastBuyNum = lastBuyNum;
 			tempLastSellNum = lastSellNum + 1;
 			tempLastHoldNum = lastHoldNum;
@@ -106,19 +106,26 @@ public class Game implements Strategy {
 		}
 		if (tempLastBuyNum > tempLastSellNum) {
 			this.upOrDown = -1;
+			// 得到该轮的价格 feedback to client
+			currentPrice -= Math.abs(caculatePrice(currentChoise)) + humanAction;
+			currentPrice = caculateTransPrice(currentPrice);
 		} else if (tempLastBuyNum < tempLastSellNum) {
 			this.upOrDown = 1;
+			// 得到该轮的价格 feedback to client
+			currentPrice += Math.abs(caculatePrice(currentChoise)) + humanAction;
+			currentPrice = caculateTransPrice(currentPrice);
 		} else if (tempLastBuyNum == tempLastSellNum) {
-			this.upOrDown = humanAction;
+			// 得到该轮的价格 feedback to client
+			//currentPrice = caculatePrice(currentChoise) + humanAction;
+			//currentPrice = caculateTransPrice(currentPrice);
+			this.upOrDown = 0;
 		} else {
 			System.err.println("this error is file game.java L113!");
 			System.err.println("tempLastBuyNum is:" + tempLastBuyNum);
 			System.err.println("tempLastSellNum is:" + tempLastSellNum);
 			System.err.println("tempLastHoldNum is:" + tempLastHoldNum);
 		}
-		// 得到该轮的价格 feedback to client
-		currentPrice += caculatePrice(currentChoise) + humanAction;
-		currentPrice = caculateTransPrice(currentPrice);
+		
 		for (int i = 0; i < (agents.length); i++) {
 			// agents[i].feedback(caculateThisTurnPrice(currentChoise));
 			agents[i].feedback(currentPrice, i);
