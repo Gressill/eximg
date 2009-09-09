@@ -117,7 +117,7 @@ public class Game implements Strategy {
 		} else if (tempLastBuyNum == tempLastSellNum) {
 			// 得到该轮的价格 feedback to client
 			//currentPrice = caculatePrice(currentChoise) + humanAction;
-			//currentPrice = caculateTransPrice(currentPrice);
+			currentPrice = caculateTransPrice(currentPrice);
 			this.upOrDown = 0;
 		} else {
 			System.err.println("this error is file game.java L113!");
@@ -125,6 +125,8 @@ public class Game implements Strategy {
 			System.err.println("tempLastSellNum is:" + tempLastSellNum);
 			System.err.println("tempLastHoldNum is:" + tempLastHoldNum);
 		}
+		//currentPrice += caculatePrice(currentChoise) + humanAction;
+		//currentPrice = caculateTransPrice(currentPrice);
 		
 		for (int i = 0; i < (agents.length); i++) {
 			// agents[i].feedback(caculateThisTurnPrice(currentChoise));
@@ -281,6 +283,35 @@ public class Game implements Strategy {
 		// this.agentScoreInfo[2] = bestAgentScore;
 		// System.out.println("agent:--best is:"+this.agentScoreInfo[2]+"avg
 		// is:"+this.agentScoreInfo[1]+"worse is:"+this.agentScoreInfo[0]);
+	}
+	
+	/**
+	 * 少数者函数,功能未定
+	 * @param bNum 买的人数
+	 * @param sNum 买的人数
+	 * @param hNum hold的人数
+	 */
+	public void whoIsWinner(int bNum,int sNum,int hNum) {
+		int tempNum = 0;
+		tempNum = Math.min(Math.min(bNum, sNum), hNum);
+		if (tempNum == bNum) {
+			this.upOrDown = -1;
+			// 得到该轮的价格 feedback to client
+			currentPrice += Math.abs(caculatePrice(currentChoise)) + humanAction;
+			currentPrice = caculateTransPrice(currentPrice);
+		} else if(tempNum == sNum){
+			this.upOrDown = -1;
+			// 得到该轮的价格 feedback to client
+			currentPrice -= Math.abs(caculatePrice(currentChoise)) + humanAction;
+			currentPrice = caculateTransPrice(currentPrice);
+		}else if (tempNum == hNum) {
+			// 得到该轮的价格 feedback to client
+			//currentPrice = caculatePrice(currentChoise) + humanAction;
+			currentPrice = caculateTransPrice(currentPrice);
+			this.upOrDown = 0;
+		}else{
+			System.err.println("Buy : "+bNum+" Sell is: "+sNum+" hold is: "+hNum);
+		}
 	}
 
 	/**

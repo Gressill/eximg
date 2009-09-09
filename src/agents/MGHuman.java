@@ -32,6 +32,10 @@ public class MGHuman extends Agent {
 	private int turns = 0;
 	
 	private double totalPrice = 0;
+	
+	private double humCash;
+	
+	private int humPosition;
 
 	// private Agent agent[] = new Agent[number];
 
@@ -42,6 +46,8 @@ public class MGHuman extends Agent {
 		this.memoryNum = m;
 		this.strategyNum = s;
 		this.agentNum = n;
+		this.humCash = Constant.INIT_CASH;
+		this.humPosition = Constant.INIT_POSTSION;
 	}
 
 	public void setSocket(Socket socket) {
@@ -139,9 +145,17 @@ public class MGHuman extends Agent {
 	public boolean feedback(double thisTurnPrice,int nothing) {
 		turns++;
 		if (humanAction == -1) {
-				mgHumanScore = mgHumanScore + thisTurnPrice;
+			humPosition--;
+			humCash += thisTurnPrice;
+			mgHumanScore = humCash + thisTurnPrice*humPosition;
 		}else if (humanAction == 1) {
-			mgHumanScore = mgHumanScore - thisTurnPrice;
+			humPosition++;
+			humCash -= thisTurnPrice;
+			mgHumanScore = humCash + thisTurnPrice*humPosition;
+		}else if (humanAction == 0) {
+			mgHumanScore = humCash + thisTurnPrice*humPosition;
+		}else {
+			System.err.println("F mghunman L158 human action is :"+humanAction);
 		}
 		if (mgHumanScore < this.humanScoreInfo[0]) {
 

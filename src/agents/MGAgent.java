@@ -40,7 +40,7 @@ public class MGAgent extends Agent {
 
 	historySize = 1 << memorySize; // Size of history space
 	this.strategySize = strategySize;
-	realPosition = 0;
+	realPosition = Constant.INIT_POSTSION;
 
 	virtualCash = new double[agentNum][historySize];
 	virtualPosition = new int[agentNum][historySize];
@@ -101,7 +101,7 @@ public class MGAgent extends Agent {
 		    + strategiesArray[i][historyChoise];
 	    if (Math.abs(tempPosition) <= Constant.k) {
 		virtualPosition[agentNum][i] = tempPosition;
-		System.err.println("agent[" + agentNum + "]p[" + i + "]position is :"+virtualPosition[agentNum][i]+"and action is"+strategiesArray[i][historyChoise]);
+		//System.err.println("agent[" + agentNum + "]p[" + i + "]position is :"+virtualPosition[agentNum][i]+"and action is"+strategiesArray[i][historyChoise]);
 		// position[i] = tempPosition;
 	    }
 	}
@@ -164,14 +164,12 @@ public class MGAgent extends Agent {
 		    agentNum, determining, realTransPrice)) {
 		determining = i;
 	    }
-	    // System.out.println("agent["+num+"]v[" + i + "]=" +
-	    // virtualScores[i]);
-	    System.out.println("agent[" + agentNum + "]v[" + i + "]cash is :"
-		    + virtualCash[agentNum][i]
-	            + "  头寸 is :"+virtualPosition[agentNum][i]+" 财富 is "
-		    + caculateVirtualWealth(agentNum, i, realTransPrice)
-		    + " choose is :" + determining
-		    +" action is: "+strategiesArray[determining][historyState]);
+//	    System.out.println("agent[" + agentNum + "]v[" + i + "]cash is :"
+//		    + virtualCash[agentNum][i]
+//	            + "  头寸 is :"+virtualPosition[agentNum][i]+" 财富 is "
+//		    + caculateVirtualWealth(agentNum, i, realTransPrice)
+//		    + " choose is :" + determining
+//		    +" action is: "+strategiesArray[determining][historyState]);
 	}
 	return true;
     }
