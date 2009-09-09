@@ -69,6 +69,10 @@ public class Constant {
 	public static int buyers = 0;
 
 	public static int sellers = 0;
+	
+	public static final double INIT_CASH = 0;
+	
+	public static final int INIT_POSTSION = 0;
 
 	// database string
 	public static String DB_DATABASE;
